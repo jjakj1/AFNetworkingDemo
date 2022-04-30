@@ -106,6 +106,40 @@
     [uploadTask resume];
 }
 
+- (void)uploadSongOfFilePath:(NSURL *)filePath completion:(QueryBlock)completion {
+  NSURL *url = [NSURL URLWithString:@"https://httpbin.org/post"];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  [request setHTTPMethod:@"POST"];
+//  [request setHTTPBody:[NSData dataWithContentsOfURL:filePath]];
+
+  NSURLSessionUploadTask *uploadTask = [self.urlSession uploadTaskWithRequest:request fromFile:filePath completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    NSError *jsonError = nil;
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+    if (dictionary == nil || ![dictionary isKindOfClass:NSDictionary.class]) {
+        return;
+    }
+    if (completion) {
+        completion(response, dictionary, error);
+    }
+  }];
+
+  [uploadTask resume];
+}
+
+- (void)afUploadMultiPartOfPreviewPath:(NSURL *)previewPath artworkPath:(NSURL *)artworkPath completion:(QueryBlock)completion {
+  NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:@"https://httpbin.org/post" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+    [formData appendPartWithFileURL:previewPath name:@"preview" fileName:@"preview.m4a" mimeType:@"audio/wav" error:nil];
+    [formData appendPartWithFileURL:artworkPath name:@"image" fileName:@"image.jpg" mimeType:@"image/jpeg" error: nil];
+  } error:nil];
+
+  NSURLSessionUploadTask *uploadTask = [self.sessionManager uploadTaskWithStreamedRequest:request progress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+    if (completion) {
+      completion(response, responseObject, error);
+    }
+  }];
+  [uploadTask resume];
+}
+
 #pragma mark - getter
 
 - (AFURLSessionManager *)sessionManager {

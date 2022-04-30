@@ -24,6 +24,7 @@
     }
 
     UIWindow *window = [[UIWindow alloc] initWithWindowScene:((UIWindowScene *)scene)];
+    window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
     window.rootViewController = [[ViewController alloc] init];
     [window makeKeyAndVisible];
     self.window = window;

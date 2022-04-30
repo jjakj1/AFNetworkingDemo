@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)afUploadSongOfFilePath:(NSURL *)filePath completion:(QueryBlock)completion;
 
+- (void)uploadSongOfFilePath:(NSURL *)filePath completion:(QueryBlock)completion;
+
+- (void)afUploadMultiPartOfPreviewPath:(NSURL *)previewPath artworkPath:(NSURL *)artworkPath completion:(QueryBlock)completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

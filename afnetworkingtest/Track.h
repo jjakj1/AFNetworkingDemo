@@ -15,7 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *artistName;
 @property (nonatomic, strong) NSString *trackName;
 @property (nonatomic, strong) NSString *previewUrl;
-@property (nonatomic, strong) NSURL *downloadPath;
+@property (nonatomic, strong) NSString *artworkUrl60;
+@property (nonatomic, strong) NSURL *downloadPreviewPath;
+@property (nonatomic, strong) NSURL *downloadArtworkPath;
 
 @end
 

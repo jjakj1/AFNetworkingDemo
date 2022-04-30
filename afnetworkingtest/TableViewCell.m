@@ -31,7 +31,7 @@
 - (void)configureWithTrack:(Track *)track {
     self.songNameLabel.text = track.trackName;
     self.artistNameLabel.text = track.artistName;
-    self.uploadButton.hidden = !track.downloadPath;
+    self.uploadButton.hidden = !track.downloadPreviewPath;
 }
 
 #pragma mark - getters

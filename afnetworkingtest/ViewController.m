@@ -118,7 +118,7 @@
             avPlayerViewController.player = player;
             [player play];
 
-            track.downloadPath = filePath;
+            track.downloadPreviewPath = filePath;
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [strongSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
@@ -128,19 +128,47 @@
 
     ((TableViewCell *)cell).uploadTapBlock = ^(TableViewCell * _Nonnull cell) {
         Track *track = self.data[indexPath.row];
-        if (!track.downloadPath) {
+        if (!track.downloadPreviewPath) {
             return;
         }
 
-        [self.networkingManager afUploadSongOfFilePath:track.downloadPath completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            if (httpResponse.statusCode == 200) {
-                NSLog(@"successfully upload file");
-            }
+        // Using AFNetworking API
+//        [self.networkingManager afUploadSongOfFilePath:track.downloadPath completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+//            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+//            if (httpResponse.statusCode == 200) {
+//                NSLog(@"successfully upload file");
+//            } else {
+//                NSLog(@"upload failed");
+//            }
+//        }];
+
+        // Using URLSession API
+//        [self.networkingManager uploadSongOfFilePath:track.downloadPreviewPath completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+//            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+//            if (httpResponse.statusCode == 200) {
+//                NSLog(@"successfully upload file");
+//            } else {
+//                NSLog(@"upload failed");
+//            }
+//        }];
+
+        // Using AFNetworking multi-part API
+        __weak ViewController *weakSelf = self;
+        [self.networkingManager afDownloadSongWithURLString:track.artworkUrl60 completion:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+            __strong ViewController *strongSelf = weakSelf;
+            [strongSelf.networkingManager afUploadMultiPartOfPreviewPath:track.downloadPreviewPath artworkPath:filePath completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                if (httpResponse.statusCode == 200) {
+                    NSLog(@"upload multi-part succeeded");
+                } else {
+                    NSLog(@"upload multi-part failed");
+                }
+            }];
         }];
     };
+
     return cell;
-}
+};
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.data.count; // TODO: using data in data model
