@@ -127,10 +127,22 @@
 }
 
 - (void)afUploadMultiPartOfPreviewPath:(NSURL *)previewPath artworkPath:(NSURL *)artworkPath completion:(QueryBlock)completion {
-  NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:@"https://httpbin.org/post" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-    [formData appendPartWithFileURL:previewPath name:@"preview" fileName:@"preview.m4a" mimeType:@"audio/wav" error:nil];
-    [formData appendPartWithFileURL:artworkPath name:@"image" fileName:@"image.jpg" mimeType:@"image/jpeg" error: nil];
-  } error:nil];
+  // set data in block
+//  NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:@"https://httpbin.org/post" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+//    [formData appendPartWithFileURL:previewPath name:@"preview" fileName:@"preview.m4a" mimeType:@"audio/wav" error:nil];
+//    [formData appendPartWithFileURL:artworkPath name:@"image" fileName:@"image.jpg" mimeType:@"image/jpeg" error: nil];
+//  } error:nil];
+  // or set the data in parameter
+  NSMutableDictionary *parameters = [@{} mutableCopy];
+  NSData *audioData = [NSData dataWithContentsOfURL:previewPath];
+  [parameters setValue:audioData forKey:@"preview"];
+  NSData *imageData = [NSData dataWithContentsOfURL:artworkPath];
+  [parameters setValue:imageData forKey:@"image"];
+
+  NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST"
+                                                                                            URLString:@"https://httpbin.org/post"
+                                                                                           parameters:[parameters copy]
+                                                                            constructingBodyWithBlock:nil error:nil];
 
   NSURLSessionUploadTask *uploadTask = [self.sessionManager uploadTaskWithStreamedRequest:request progress:nil completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
     if (completion) {

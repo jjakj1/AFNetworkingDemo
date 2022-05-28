@@ -603,10 +603,10 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     delegate.completionHandler = completionHandler;
 
     dataTask.taskDescription = self.taskDescriptionForSessionTasks;
+  delegate.uploadProgressBlock = uploadProgressBlock;
+  delegate.downloadProgressBlock = downloadProgressBlock;
     [self setDelegate:delegate forTask:dataTask];
 
-    delegate.uploadProgressBlock = uploadProgressBlock;
-    delegate.downloadProgressBlock = downloadProgressBlock;
 }
 
 - (void)addDelegateForUploadTask:(NSURLSessionUploadTask *)uploadTask
@@ -619,9 +619,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 
     uploadTask.taskDescription = self.taskDescriptionForSessionTasks;
 
+  delegate.uploadProgressBlock = uploadProgressBlock;
     [self setDelegate:delegate forTask:uploadTask];
 
-    delegate.uploadProgressBlock = uploadProgressBlock;
 }
 
 - (void)addDelegateForDownloadTask:(NSURLSessionDownloadTask *)downloadTask
@@ -641,9 +641,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 
     downloadTask.taskDescription = self.taskDescriptionForSessionTasks;
 
+  delegate.downloadProgressBlock = downloadProgressBlock;
     [self setDelegate:delegate forTask:downloadTask];
 
-    delegate.downloadProgressBlock = downloadProgressBlock;
 }
 
 - (void)removeDelegateForTask:(NSURLSessionTask *)task {

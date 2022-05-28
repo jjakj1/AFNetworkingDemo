@@ -95,35 +95,35 @@
 
         __weak ViewController *weakSelf = self;
         // Using AFNetworking API
-//        [self.networkingManager afDownloadSongWithURLString:track.previewUrl completion:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
-//            __strong ViewController *strongSelf = weakSelf;
-//            AVPlayerViewController *avPlayerViewController = [[AVPlayerViewController alloc] init];
-//            [strongSelf presentViewController:avPlayerViewController animated:YES completion:nil];
-//            AVPlayer *player = [[AVPlayer alloc] initWithURL:filePath];
-//            avPlayerViewController.player = player;
-//            [player play];
-//            track.downloadPath = filePath;
-//
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [strongSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
-//            });
-//        }];
-
-        // Using URLSession API
-        [self.networkingManager downloadSongWithURLString:track.previewUrl completion:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        [self.networkingManager afDownloadSongWithURLString:track.previewUrl completion:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
             __strong ViewController *strongSelf = weakSelf;
             AVPlayerViewController *avPlayerViewController = [[AVPlayerViewController alloc] init];
             [strongSelf presentViewController:avPlayerViewController animated:YES completion:nil];
             AVPlayer *player = [[AVPlayer alloc] initWithURL:filePath];
             avPlayerViewController.player = player;
             [player play];
-
             track.downloadPreviewPath = filePath;
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [strongSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
             });
         }];
+
+        // Using URLSession API
+//        [self.networkingManager downloadSongWithURLString:track.previewUrl completion:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+//            __strong ViewController *strongSelf = weakSelf;
+//            AVPlayerViewController *avPlayerViewController = [[AVPlayerViewController alloc] init];
+//            [strongSelf presentViewController:avPlayerViewController animated:YES completion:nil];
+//            AVPlayer *player = [[AVPlayer alloc] initWithURL:filePath];
+//            avPlayerViewController.player = player;
+//            [player play];
+//
+//            track.downloadPreviewPath = filePath;
+//
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [strongSelf.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
+//            });
+//        }];
     };
 
     ((TableViewCell *)cell).uploadTapBlock = ^(TableViewCell * _Nonnull cell) {
@@ -133,7 +133,7 @@
         }
 
         // Using AFNetworking API
-//        [self.networkingManager afUploadSongOfFilePath:track.downloadPath completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+//        [self.networkingManager afUploadSongOfFilePath:track.downloadPreviewPath completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
 //            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 //            if (httpResponse.statusCode == 200) {
 //                NSLog(@"successfully upload file");
@@ -152,7 +152,7 @@
 //            }
 //        }];
 
-        // Using AFNetworking multi-part API
+//         Using AFNetworking multi-part API
         __weak ViewController *weakSelf = self;
         [self.networkingManager afDownloadSongWithURLString:track.artworkUrl60 completion:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
             __strong ViewController *strongSelf = weakSelf;
@@ -182,28 +182,12 @@
     }
 
     // Using AFNetworking API
-//    __weak ViewController *weakSelf = self;
-//    [self.networkingManager afSearchSongsWithKeyword:searchBar.text completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-//       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-//        if (httpResponse.statusCode != 200 && ![responseObject isKindOfClass:NSDictionary.class]) {
-//            return;
-//        }
-//        NSArray *responseArray = ((NSDictionary *)responseObject)[@"results"];
-//        __strong ViewController *strongSelf = weakSelf;
-//        strongSelf.data = [Track mj_objectArrayWithKeyValuesArray:responseArray];
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [strongSelf.tableView reloadData];
-//        });
-//    }];
-
-    // Using URLSession API
     __weak ViewController *weakSelf = self;
-    [self.networkingManager searchSongsWithKeyword:searchBar.text completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        if (httpResponse.statusCode != 200 || ![responseObject isKindOfClass:NSDictionary.class]) {
+    [self.networkingManager afSearchSongsWithKeyword:searchBar.text completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        if (httpResponse.statusCode != 200 && ![responseObject isKindOfClass:NSDictionary.class]) {
             return;
         }
-
         NSArray *responseArray = ((NSDictionary *)responseObject)[@"results"];
         __strong ViewController *strongSelf = weakSelf;
         strongSelf.data = [Track mj_objectArrayWithKeyValuesArray:responseArray];
@@ -211,6 +195,22 @@
             [strongSelf.tableView reloadData];
         });
     }];
+
+    // Using URLSession API
+//    __weak ViewController *weakSelf = self;
+//    [self.networkingManager searchSongsWithKeyword:searchBar.text completion:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+//        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+//        if (httpResponse.statusCode != 200 || ![responseObject isKindOfClass:NSDictionary.class]) {
+//            return;
+//        }
+//
+//        NSArray *responseArray = ((NSDictionary *)responseObject)[@"results"];
+//        __strong ViewController *strongSelf = weakSelf;
+//        strongSelf.data = [Track mj_objectArrayWithKeyValuesArray:responseArray];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [strongSelf.tableView reloadData];
+//        });
+//    }];
 }
 
 @end
